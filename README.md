@@ -31,6 +31,4 @@ Manzoni L., Papetti D.M., Cazzaniga P., Spolaor S., Mauri G., Besozzi D., and No
 
 ## Additional information
 
-For any information please contact: 
-Luca Manzoni (luca.manzoni@units.it)
-Marco S. Nobile (m.s.nobile@tue.nl)
+For any information please contact: Luca Manzoni (luca.manzoni@units.it) and Marco S. Nobile (m.s.nobile@tue.nl).
