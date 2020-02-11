@@ -2,7 +2,7 @@ import sys
 import scipy.interpolate as interpolate
 import sobol_seq
 import numpy as np
-#from matplotlib.pyplot import *
+from matplotlib.pyplot import *
 from numpy.random import uniform, seed
 from numpy import linspace, concatenate, meshgrid, isnan, array, loadtxt
 from math import acos, pi
@@ -75,8 +75,11 @@ class surF(object):
 		self._grid = None
 		self._last_coefficients = None
 
-		self.fig = figure()
-		self.ax = self.fig.add_subplot(1, 1, 1, projection="3d")
+		try: 
+			self.fig = figure()
+			self.ax = self.fig.add_subplot(1, 1, 1, projection="3d")
+		except:
+			pass
 
 
 	def specify_fitness(self, fun):
