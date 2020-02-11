@@ -28,3 +28,9 @@ Now, it is possible to exploit surF's  ```approximate(x)``` method to calculate 
 If you find surF useful for your research, please cite our work as follows:
 
 Manzoni L., Papetti D.M., Cazzaniga P., Spolaor S., Mauri G., Besozzi D., and Nobile M.S.: Surfing on Fitness Landscapes: FST-PSO Powered by Fourier Surrogate Modeling (under revision)
+
+## Additional information
+
+For any information please contact: 
+Luca Manzoni (luca.manzoni@units.it)
+Marco S. Nobile (m.s.nobile@tue.nl)
