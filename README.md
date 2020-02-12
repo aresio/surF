@@ -1,4 +1,4 @@
-# surF - Surrogate Fourier modeling 
+# surF - surrogate Fourier modeling 
 
 surF is a novel surrogate modeling technique that leverages the discrete Fourier transform to generate a smoother, and possibly easier to explore, fitness landscape.
 
