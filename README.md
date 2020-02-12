@@ -2,6 +2,10 @@
 
 surF is a novel surrogate modeling technique that leverages the discrete Fourier transform to generate a smoother, and possibly easier to explore, fitness landscape.
 
+## Installation
+
+```pip install surfer```
+
 ## Usage
 
 First of all, import surF as follows (please mind the upper case F):
