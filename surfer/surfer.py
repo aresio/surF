@@ -74,6 +74,8 @@ class surF(object):
 		self._result_interpolation = None
 		self._grid = None
 		self._last_coefficients = None
+		self._Fourier_coefficients = None
+		self._fitness_arguments = None 
 
 		try: 
 			self.fig = figure()
@@ -81,9 +83,16 @@ class surF(object):
 		except:
 			pass
 
+		print(" * surF object created")
 
-	def specify_fitness(self, fun):
+
+	def get_Fourier_coefficients(self):
+		return self._Fourier_coefficients
+
+
+	def specify_fitness(self, fun, arguments=None):
 		self._fitness_function = fun
+		self._fitness_arguments = arguments
 
 	def specify_search_space(self, bounds):
 		self._boundaries = np.array(bounds)
@@ -171,11 +180,15 @@ class surF(object):
 			print (all_evaluations)
 			#exit()
 		else:
-			all_evaluations = [self._fitness_function(v) for v in self._fun_samples]
+			if self._fitness_arguments is not None:
+				all_evaluations = [self._fitness_function(v, self._fitness_arguments) for v in self._fun_samples]
+			else:
+				all_evaluations = [self._fitness_function(v) for v in self._fun_samples]
+			 
 		self._f_approx_values = np.array(all_evaluations)
 		
 	def _create_model(self, coeffs=10):
-		self._f_approx = approximate_fitn(
+		self._f_approx = self.approximate_fitn(
 			self._result_interpolation,
 			self._boundaries,
 			n_coeffs=coeffs,
@@ -191,19 +204,70 @@ class surF(object):
 		self._interpolate()
 		self._create_model(coeffs=self._last_coefficients)
 
-	def plot_approximate_landscape(self):
+	def plot_approximate_landscape(self, ax=None):
+		if ax is None: ax=self.ax
 		obj_fft_approx_values = array([self.approximate(tu) for tu in zip(*self._grid)])
-		self.ax.plot_surface(self._grid[0], self._grid[1], obj_fft_approx_values, label="Surrogate model", alpha=0.6)
-		#show()
+		ax.plot_surface(self._grid[0], self._grid[1], obj_fft_approx_values, 
+			label="Surrogate model", 
+			cmap="viridis"
+			)
+		ax.set_title("surF surrogate")
 
-	def plot_real_landscape(self, res=100):
-		res_true_fit = []
-		for x in linspace(self._boundaries[0][0], self._boundaries[0][1], res):
-			for y in linspace(self._boundaries[1][0], self._boundaries[1][1], res):
-				res_true_fit.append(self._fitness_function([x,y]))
-		res_true_fit = array(res_true_fit).reshape((res,res))
-		self.ax.plot_surface(self._grid[0], self._grid[1], res_true_fit, label="Real function", alpha=0.6)
-		#show()
+	def plot_real_landscape(self, res=100, ax=None):
+		if ax is None: ax=self.ax
+		obj_fun_actual_values = []
+
+		X = linspace(self._boundaries[0][0], self._boundaries[0][1], res)
+		Y = linspace(self._boundaries[1][0], self._boundaries[1][1], res)
+		xx, yy = meshgrid(X,Y)
+		for x in X:
+			temp = []
+			for y in Y:
+				if self._fitness_arguments is None:
+					fit = self._fitness_function([y,x])
+				else:
+					fit = self._fitness_function([y,x], self._fitness_arguments)
+				temp.append(fit)
+			obj_fun_actual_values.append(temp)
+	
+		ax.plot_surface(xx, yy, array(obj_fun_actual_values), label="Real model", cmap="viridis")
+		ax.set_title("Actual function")
+		
+
+	def approximate_fitn(self, f_values, space_size, n_coeffs=None):
+		n = len(f_values)
+		d = len(space_size)
+		if n_coeffs is None:
+			rem_coeffs = n
+		else:
+			rem_coeffs = n - n_coeffs
+		coeffs = np.fft.fftn(f_values)
+
+
+		coeffs = np.fft.fftshift(coeffs)
+		self._Fourier_coefficients = coeffs[:]
+
+		for idx_tuple in np.ndindex(coeffs.shape):
+			for i in idx_tuple: 
+				if i < rem_coeffs//2 or i >= n - rem_coeffs//2:
+					coeffs[idx_tuple] = 0
+
+		coeffs = np.fft.ifftshift(coeffs)
+		f_approx_vals = np.fft.ifftn(coeffs).real
+
+		points = []
+		for i in range(0, d):
+			points.append(np.linspace(space_size[i][0], space_size[i][1], n))
+
+		interp = interpolate.RegularGridInterpolator(tuple(points), f_approx_vals, method='linear')
+
+		def f_approx(coords):
+			return interp(tuple(coords))
+
+		
+
+		return f_approx
+
 
 
 def interpol(pnts, f_app_values, lattice):
@@ -213,36 +277,9 @@ def interpol(pnts, f_app_values, lattice):
 	z = np.where(isnan(z1), z2, z1)
 	return z
 
-def approximate_fitn(f_values, space_size, n_coeffs=None):
-	n = len(f_values)
-	d = len(space_size)
-	if n_coeffs is None:
-		rem_coeffs = n
-	else:
-		rem_coeffs = n - n_coeffs
-	coeffs = np.fft.fftn(f_values)
-	coeffs = np.fft.fftshift(coeffs)
-
-	for idx_tuple in np.ndindex(coeffs.shape):
-		for i in idx_tuple: 
-			if i < rem_coeffs//2 or i >= n - rem_coeffs//2:
-				coeffs[idx_tuple] = 0
-
-	coeffs = np.fft.ifftshift(coeffs)
-	f_approx_vals = np.fft.ifftn(coeffs).real
-
-	points = []
-	for i in range(0, d):
-		points.append(np.linspace(space_size[i][0], space_size[i][1], n))
-
-	interp = interpolate.RegularGridInterpolator(tuple(points), f_approx_vals, method='linear')
-
-	def f_approx(coords):
-		return interp(tuple(coords))
-
-	return f_approx
 
 
 
 if __name__ == '__main__':
-	pass
+	
+	print("DO NOT LAUNCH THIS SCRIPT.\nImport surfer instead.")
