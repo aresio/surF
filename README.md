@@ -18,11 +18,11 @@ Assume now that you have a fitness function ```f()``` defined over a search spac
 
 In order to build a surrogate model with surF, considering ```gamma``` Fourier coefficients, built with ```sigma``` samples of the fitness landscape and interpolated with a grid with ```rho``` steps, use the following code:
 
-```
+```py
 S = surF()
-S.specify_fitness(fitness)
-S.specify_search_space(hypercube)
-S.build_model(coefficients=gamma, numpoints=sigma, resolution=rho)
+S.specify_fitness(fitness)  # this must be a valid function calculating the fitness of a candidate solution
+S.specify_search_space(hypercube)  # this must be a list of lists, specifying the boundaries of search space 
+S.build_model(coefficients=gamma, numpoints=sigma, resolution=rho)  # gamma, sigma and rho must be natural numbers
 ```
 
 Now, it is possible to exploit surF's  ```approximate(x)``` method to calculate the fitness value of a candidate solution ```x``` using the Fourier surrogate model.
@@ -35,4 +35,4 @@ Manzoni L., Papetti D.M., Cazzaniga P., Spolaor S., Mauri G., Besozzi D., Nobile
 
 ## Additional information
 
-For any information please contact: Luca Manzoni (luca.manzoni@units.it) and Marco S. Nobile (m.s.nobile@tue.nl).
+For any information please contact: Luca Manzoni (luca.manzoni@units.it) and Marco S. Nobile (marco.nobile@unive.it).
